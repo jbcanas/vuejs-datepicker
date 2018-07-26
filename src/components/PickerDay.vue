@@ -1,5 +1,5 @@
 <template>
-  <div :class="[calendarClass, 'vdp-datepicker__calendar']" v-show="showDayView" :style="calendarStyle" @mousedown.prevent>
+  <div :class="[calendarClass, 'vdp-datepicker__calendar']" v-show="showDayView" :style="calendarStyle">
     <slot name="beforeCalendarHeader"></slot>
     <header>
       <span
@@ -23,11 +23,60 @@
           :class="dayClasses(day)"
           @click="selectDate(day)">{{ day.date }}</span>
     </div>
+    <div id="timePicker" v-if="enableTimeInput" class="container">
+      <div class="row">
+        <div class="m-divider col-md-12">
+          <span></span>
+          <span>Input Time</span>
+          <span></span>
+        </div>
+      </div>
+      <div class="row justify-content-md-center">
+        <div class="col col-lg-9 ml-4">
+          <label>Hour</label>
+          <input
+            type="text"
+            ref="timeHour"
+            class="form-control"
+            maxlength="2"
+            v-model="timeHour"
+            @keydown.enter="saveDate"
+            @focus="$event.target.select()">
+          <h3>:</h3>
+          <input
+            type="text"
+            ref="timeMinutes"
+            class="form-control"
+            maxlength="2"
+            v-model="timeMinutes"
+            @keydown.enter="saveDate"
+            @focus="$event.target.select()">
+          <label>Minutes</label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <button
+          type="button"
+          v-show="currentDate !== null"
+          @click="saveDate"
+          class="btn m-btn--square btn-outline-primary btn-sm">Save</button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 <script>
+import moment from 'moment'
 import DateUtils from '../utils/DateUtils'
 export default {
+  data () {
+    return {
+      currentDate: null,
+      timeHour: 0,
+      timeMinutes: 0
+    }
+  },
   props: {
     showDayView: Boolean,
     selectedDate: Date,
@@ -41,7 +90,9 @@ export default {
     calendarStyle: Object,
     translation: Object,
     isRtl: Boolean,
-    mondayFirst: Boolean
+    mondayFirst: Boolean,
+    enableTimeInput: Boolean,
+    close: Function
   },
   computed: {
     /**
@@ -75,7 +126,7 @@ export default {
     days () {
       const d = this.pageDate
       let days = []
-      // set up a new date object to the beginning of the current 'page'
+      // set up a new date object to the beginning of the current 'pages'
       let dObj = new Date(d.getFullYear(), d.getMonth(), 1, d.getHours(), d.getMinutes())
       let daysInMonth = DateUtils.daysInMonth(dObj.getFullYear(), dObj.getMonth())
       for (let i = 0; i < daysInMonth; i++) {
@@ -121,7 +172,14 @@ export default {
     }
   },
   methods: {
+
     selectDate (date) {
+      this.currentDate = date
+      const newDate = moment(date.timestamp)
+      newDate.set('hour', this.timeHour)
+      newDate.set('minutes', this.timeMinutes)
+      date.timestamp = newDate.valueOf()
+
       if (date.isDisabled) {
         this.$emit('selectedDisabled', date)
         return false
@@ -333,6 +391,10 @@ export default {
      */
     isDefined (prop) {
       return typeof prop !== 'undefined' && prop
+    },
+    saveDate () {
+      this.selectDate(this.currentDate)
+      this.$emit('closeCalendar')
     }
   }
 }

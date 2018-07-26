@@ -43,10 +43,12 @@
       :translation="translation"
       :pageTimestamp="pageTimestamp"
       :isRtl="isRtl"
+      :enableTimeInput="enableTimeInput"
       :mondayFirst="mondayFirst"
       @changedMonth="setPageDate"
       @selectDate="selectDate"
       @showMonthCalendar="showMonthCalendar"
+      @closeCalendar="close"
       @selectedDisabled="$emit('selectedDisabled')">
       <slot name="beforeCalendarHeader" slot="beforeCalendarHeader"></slot>
     </picker-day>
@@ -146,7 +148,8 @@ export default {
     maximumView: {
       type: String,
       default: 'year'
-    }
+    },
+    enableTimeInput: Boolean
   },
   data () {
     const startDate = this.openDate ? new Date(this.openDate) : new Date()
@@ -320,6 +323,7 @@ export default {
      */
     setDate (timestamp) {
       const date = new Date(timestamp)
+
       this.selectedDate = new Date(date)
       this.setPageDate(date)
       this.$emit('selected', new Date(date))
@@ -340,7 +344,7 @@ export default {
      */
     selectDate (day) {
       this.setDate(day.timestamp)
-      if (!this.isInline) {
+      if (!this.isInline && !this.enableTimeInput) {
         this.close(true)
       }
     },
