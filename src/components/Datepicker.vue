@@ -1,5 +1,5 @@
 <template>
-  <div class="vdp-datepicker" :class="[wrapperClass, isRtl ? 'rtl' : '']">
+  <div class="vdp-datepicker" :class="[wrapperClass, isRtl ? 'rtl' : '']"  v-click-outside="close">
     <date-input
       :selectedDate="selectedDate"
       :format="format"
