@@ -395,6 +395,7 @@ export default {
     saveDate () {
       this.selectDate(this.currentDate)
       this.$emit('closeCalendar')
+      this.$emit('timeInputSave')
     }
   }
 }

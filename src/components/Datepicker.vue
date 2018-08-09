@@ -49,6 +49,7 @@
       @selectDate="selectDate"
       @showMonthCalendar="showMonthCalendar"
       @closeCalendar="close"
+      @timeInputSave="$emit('timeInputSave')"
       @selectedDisabled="$emit('selectedDisabled')">
       <slot name="beforeCalendarHeader" slot="beforeCalendarHeader"></slot>
     </picker-day>
