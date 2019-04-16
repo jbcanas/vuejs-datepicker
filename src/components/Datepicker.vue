@@ -1,5 +1,5 @@
 <template>
-  <div class="vdp-datepicker" :class="[wrapperClass, isRtl ? 'rtl' : '']"  v-click-outside="close">
+  <div class="vdp-datepicker" :class="[wrapperClass, isRtl ? 'rtl' : '']" v-click-outside="closeOnClickOutside">
     <date-input
       :selectedDate="selectedDate"
       :format="format"
@@ -440,6 +440,9 @@ export default {
       if (this.isInline) {
         this.setInitialView()
       }
+    },
+    closeOnClickOutside (ev) {
+      if (!ev.target.classList.contains('day')) this.close()
     }
   },
   mounted () {
